@@ -4,9 +4,9 @@ enum Player {
     O = "O",
 }
 
-class App {
-    private board: Player[][];
-    private currentPlayer: Player;
+class TicTacToeStandard {
+    protected board: Player[][];
+    protected currentPlayer: Player;
 
     constructor() {
         this.board = [
@@ -18,7 +18,7 @@ class App {
         this.renderBoard();
     }
 
-    private renderBoard() {
+    protected renderBoard() {
         const table = document.getElementById("ticTacToe")!;
         table.innerHTML = "";
 
@@ -40,10 +40,10 @@ class App {
             this.renderBoard();
 
             if (this.checkWinner()) {
-                alert(`Player ${this.currentPlayer} wins!`);
+                this.snackbarWhoWins(this.currentPlayer, false)
                 this.resetGame();
             } else if (this.isBoardFull()) {
-                alert("It's a draw!");
+                this.snackbarWhoWins(this.currentPlayer, true)
                 this.resetGame();
             } else {
                 this.currentPlayer = this.currentPlayer === Player.X ? Player.O : Player.X;
@@ -51,7 +51,28 @@ class App {
         }
     }
 
-    private checkWinner(): boolean {
+    protected snackbarWhoWins(currentPlayer: Player, draw: boolean) {
+        const snackbar = document.getElementById("snackbar");
+
+        if (snackbar) {
+            if (draw) {
+                snackbar.textContent = 'It\'s a draw!'
+            } else {
+                snackbar.textContent = `Player ${currentPlayer} wins!`
+            }
+            snackbar.className = "show";
+
+            // After 3 seconds, remove the show class from DIV
+            setTimeout(function () {
+                if (snackbar) {
+                    snackbar.className = snackbar.className.replace("show", "");
+                }
+            }, 3000);
+        }
+    }
+
+
+    protected checkWinner(): boolean {
         // Check rows, columns, and diagonals for a winner
         return (
             this.checkLine(0, 0, 0, 1, 0, 2) ||
@@ -65,7 +86,7 @@ class App {
         );
     }
 
-    private checkLine(r1: number, c1: number, r2: number, c2: number, r3: number, c3: number): boolean {
+    protected checkLine(r1: number, c1: number, r2: number, c2: number, r3: number, c3: number): boolean {
         return (
             this.board[r1][c1] !== Player.None &&
             this.board[r1][c1] === this.board[r2][c2] &&
@@ -73,7 +94,7 @@ class App {
         );
     }
 
-    private isBoardFull(): boolean {
+    protected isBoardFull(): boolean {
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
                 if (this.board[row][col] === Player.None) {
@@ -84,7 +105,7 @@ class App {
         return true;
     }
 
-    private resetGame() {
+    protected resetGame() {
         this.board = [
             [Player.None, Player.None, Player.None],
             [Player.None, Player.None, Player.None],
@@ -95,4 +116,4 @@ class App {
     }
 }
 
-const game = new App();
+const game = new TicTacToeStandard();
